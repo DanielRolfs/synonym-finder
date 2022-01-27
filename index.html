@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <style>
+            .center{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            .text-center{
+                text-align: center;
+            }
+            .flex-col{
+                flex-direction: column;
+            }
+            .width{
+                width: fit-content;
+            }
+            .mb-5{
+                margin-bottom: 5px;
+            }
+            .mb-50{
+                margin-bottom: 50px;
+            }
+        </style>
+        <script>
+            async function getSynonyms(){
+                let query = document.getElementById('searchQuery').value;
+                let url =  `https://www.openthesaurus.de/synonyme/search?q=${query}&format=application/json`;
+                let response = await fetch(url);
+                let responseAsJason = await response.json();
+                let synsets = responseAsJason['synsets'];
+                rederaction(synsets);
+                rederSynsets(synsets);
+            }
+
+            function rederaction(synsets){
+                let action = document.getElementById('action');
+
+                action.innerHTML = `<div class="text-center"> Es wurden ${synsets.length} passende Synonymgruppen geladen.<br> Quelle: Openthesaurus API</div>`;
+
+            }
+
+            function rederSynsets(synsets){
+                let container = document.getElementById('container');
+
+                for (let i = 0; i < synsets.length; i++) {
+                    const synset = synsets[i];
+                    let terms = synset['terms'];
+                    container.innerHTML += `<div><h2>Gruppe ${synset['id']}</h2></div>`;
+                    
+                        for (let j = 0; j < terms.length; j++) {
+                            const term = terms[j];
+                            container.innerHTML += `<div>${term['term']}</div>`;
+                        }
+                    }
+    
+            }
+
+
+        </script>
+    </head>
+    <body>
+
+        <h1 class="center text-center">Gib ein Wort ein, 
+            <br> zu dem du Synonyme finden möchtest:</h1>
+
+        <div class="center mb-5">
+            <input type="text" id="searchQuery">
+            <button onclick="getSynonyms()">Synonyme finden</button>
+        </div>
+
+        <div class="center mb-50">
+            <div class="center flex-col width">
+                <div class="width" id="action"></div>
+                <div class="width" id="container"></div>
+            </div>
+        </div>
+
+    </body>
+</html>
